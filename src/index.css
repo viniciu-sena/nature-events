@@ -7,11 +7,14 @@
 :root {
   --w-bg-master: #282a36;
   --w-bg-component: #191a21;
+  --leaflet-tile-filter: brightness(0.6) invert(1) contrast(3)
+    hue-rotate(200deg) saturate(0.3) brightness(0.7);
 }
 
 /* custom scrollbar */
 ::-webkit-scrollbar {
-  width: 20px;
+  width: 5px;
+  border-radius: 50px;
 }
 
 ::-webkit-scrollbar-track {
@@ -22,14 +25,25 @@
   background-color: #262d38;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background-color: #1a202e;
-}
-
 body {
   font-family: 'Poppins';
   background-color: var(--w-bg-component);
   color: #fff;
+}
+
+.leaflet-div-icon {
+  background-color: transparent;
+  border: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  .leaflet-tile {
+    filter: var(--leaflet-tile-filter, none);
+  }
+
+  .leaflet-container {
+    background: #303030;
+  }
 }
 
 @layer base {

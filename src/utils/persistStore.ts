@@ -1,6 +1,6 @@
 export const getStorage = <T>(key: string): T | null => {
   const item = sessionStorage.getItem(key);
-  return item ? JSON.parse(item) : null;
+  return item !== null ? JSON.parse(item) : null;
 };
 
 export const setStorage = <T>(
