@@ -3,12 +3,16 @@ import L from 'leaflet';
 import { memo } from 'react';
 import { renderToString } from 'react-dom/server';
 import { MapContainer, Marker, TileLayer } from 'react-leaflet';
+import { useNavigate } from 'react-router-dom';
+import { DatePicker } from '../../components/date-picker/DatePicker';
 import EventMarker from '../../components/event-marker/EventMarker';
+import FormLabel from '../../components/form-label/FormLabel';
 import Loading from '../../components/loading/Loading';
 import { Select } from '../../components/select/Select';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
-import { EONETCategories } from '../../types/events';
+import { EONETCategories, EventRequest } from '../../types/events';
+import { categories, statusList } from '../../utils/selectItems';
 import { useMain } from './useMain';
 
 function Main() {
@@ -18,57 +22,94 @@ function Main() {
     loading,
     searchRef,
     eventLoading,
-    categories,
     category,
+    status,
+    dateStart,
+    dateEnd,
+    setEnd,
+    setStart,
+    setStatus,
     setCategory,
     handleSearch,
     handleResetLocation,
   } = useMain();
+  const navigate = useNavigate();
 
   return (
     <>
       <header className="grid grid-cols-1 gap-4">
         <form
-          className="w-full flex justify-start items-center gap-2"
+          className="w-full flex flex-col md:flex-row justify-start items-center gap-2"
           onSubmit={handleSearch}
         >
-          <Select
-            value={category}
-            onChange={(item) => setCategory(item as EONETCategories)}
-            items={categories}
-            className="min-w-fit"
-            placeholder="Selecione uma categoria"
-          />
-          <Input
-            className="focus:border-none w-1/3"
-            ref={searchRef}
-            placeholder="econtre sua cidade..."
-          />
-          <Button
-            variant="default"
-            type="submit"
-            className="transition-all duration-300 disabled:cursor-not-allowed"
-            disabled={loading}
-            aria-label="Pesquisar"
-            title="Pesquisar"
-          >
-            {loading ? (
-              <Spinner className="animate-spin" size={32} />
-            ) : (
-              <MagnifyingGlass weight="bold" size={32} />
-            )}
-          </Button>
-          <Button
-            variant="default"
-            type="reset"
-            className="transition-all duration-300 disabled:cursor-not-allowed"
-            disabled={loading}
-            onClick={handleResetLocation}
-            aria-label="Voltar ao map mundi"
-            title="Voltar ao map mundi"
-          >
-            <Globe size={32} />
-          </Button>
+          <FormLabel label="Status" className="w-full md:w-1/6">
+            <Select
+              value={status}
+              onChange={(item) => setStatus(item as EventRequest['status'])}
+              items={statusList}
+              placeholder="Selecione um status"
+            />
+          </FormLabel>
+          <FormLabel label="Categoria" className="w-full md:w-1/6">
+            <Select
+              value={category}
+              onChange={(item) => setCategory(item as EONETCategories)}
+              items={categories}
+              placeholder="Selecione uma categoria"
+            />
+          </FormLabel>
+          <FormLabel label="Data inicial" className="w-full md:w-1/6">
+            <DatePicker
+              value={dateStart}
+              onChange={setStart}
+              maxDate={dateEnd}
+              placeholder="Data inicial"
+              className="w-full"
+            />
+          </FormLabel>
+          <FormLabel label="Data final" className="w-full md:w-1/6">
+            <DatePicker
+              value={dateEnd}
+              onChange={setEnd}
+              minDate={dateStart}
+              placeholder="Data final"
+              className="w-full"
+            />
+          </FormLabel>
+          <FormLabel label="Região" className="w-full md:w-1/2">
+            <div className="flex gap-2 w-full">
+              <Input
+                className="focus:border-none w-full"
+                ref={searchRef}
+                placeholder="econtre sua cidade..."
+              />
+              <Button
+                variant="default"
+                type="submit"
+                className="transition-all duration-300 disabled:cursor-not-allowed"
+                disabled={loading}
+                aria-label="Pesquisar"
+                title="Pesquisar"
+              >
+                {loading ? (
+                  <Spinner className="animate-spin" size={32} />
+                ) : (
+                  <MagnifyingGlass weight="bold" size={32} />
+                )}
+              </Button>
+              <Button
+                variant="default"
+                type="reset"
+                className="transition-all duration-300 disabled:cursor-not-allowed"
+                disabled={loading}
+                onClick={handleResetLocation}
+                aria-label="Voltar ao map mundi"
+                title="Voltar ao map mundi"
+              >
+                <Globe size={32} />
+              </Button>
+            </div>
+          </FormLabel>
         </form>
       </header>
       <main className="h-full w-full relative m-auto flex justify-start pt-4">
@@ -90,8 +131,8 @@ function Main() {
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
-          {events !== null &&
-            events?.map((event) => (
+          {events !== undefined &&
+            events.map((event) => (
               <Marker
                 key={event.id}
                 position={
@@ -100,6 +141,9 @@ function Main() {
                 icon={L.divIcon({
                   html: renderToString(<EventMarker event={event} />),
                 })}
+                eventHandlers={{
+                  click: () => navigate(event.id),
+                }}
               />
             ))}
         </MapContainer>

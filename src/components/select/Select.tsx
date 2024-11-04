@@ -47,19 +47,27 @@ export function Select({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className={twMerge('w-[200px] justify-between', className)}
+          className={twMerge(
+            cn(
+              'w-full justify-between text-left font-normal',
+              !value && 'text-muted-foreground',
+            ),
+            className,
+          )}
         >
-          {value
-            ? items.find((item) => item.value === value)?.label
-            : placeholder}
+          {value ? (
+            items.find((item) => item.value === value)?.label
+          ) : (
+            <span className="opacity-60 w-full">{placeholder}</span>
+          )}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[200px] p-0">
+      <PopoverContent className="w-60 p-0">
         <Command>
           <CommandInput placeholder="Pesquisar" />
           <CommandList>
-            <CommandEmpty>No framework found.</CommandEmpty>
+            <CommandEmpty>Nada encontrado </CommandEmpty>
             <CommandGroup>
               {items.map((item) => (
                 <CommandItem

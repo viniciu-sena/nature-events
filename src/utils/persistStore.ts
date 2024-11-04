@@ -1,6 +1,6 @@
 export const getStorage = <T>(key: string): T | null => {
   const item = sessionStorage.getItem(key);
-  return item !== null ? JSON.parse(item) : null;
+  return item !== null && item ? JSON.parse(item) : null;
 };
 
 export const setStorage = <T>(
@@ -11,6 +11,9 @@ export const setStorage = <T>(
     replace?: false | undefined,
   ) => void,
 ) => {
+  if (value === null || !value) {
+    sessionStorage.removeItem(key as string);
+  }
   sessionStorage.setItem(key as string, JSON.stringify(value));
   set((state) => ({ ...state, [key]: value }));
 };
