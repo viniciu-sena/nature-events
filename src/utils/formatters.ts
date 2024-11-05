@@ -1,7 +1,7 @@
 import { Event, EventsResponse } from '../types/events';
 
-export const formatterData = (data: { data: EventsResponse }): Event[] => {
-  return data.data.events
+export const formatterData = (response: { data: EventsResponse }): Event[] => {
+  return response.data.events
     .filter((event) =>
       event.geometry.every(
         (geo) =>

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { EventRequest, EventsResponse } from '../types/events';
+import { Event, EventRequest, EventsResponse } from '../types/events';
 import {
   Address,
   Reverse,
@@ -22,6 +22,8 @@ const location = {
 const eonet = {
   get: (params: EventRequest): GetResponse<EventsResponse> =>
     axios.get('https://eonet.gsfc.nasa.gov/api/v3/events', { params }),
+  event: (id: string): GetResponse<Event> =>
+    axios.get(`https://eonet.gsfc.nasa.gov/api/v3/events/${id}`),
 };
 
 export const client = { location, eonet };
