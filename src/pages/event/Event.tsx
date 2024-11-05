@@ -15,29 +15,19 @@ import {
   TwitterShareButton,
   WhatsappShareButton,
 } from 'react-share';
-import notFound from '../../assets/not-found.png';
 import EventIcon from '../../components/event-icon/EventIcon';
 import EventMarker from '../../components/event-marker/EventMarker';
 import Loading from '../../components/loading/Loading';
+import NotFound from '../../components/not-found/NotFound';
 import { EONETCategories, Event as EventType } from '../../types/events';
 import { useEvent } from './useEvent';
 
 export default function Event() {
-  const { event, isLoading, shareMessage, center, isError } = useEvent();
+  const { event, isLoading, shareMessage, center, isError, location } =
+    useEvent();
 
   if (isError) {
-    return (
-      <main className="flex flex-col items-center justify-center">
-        <img src={notFound} alt="Não encontrado" className="m-auto h-[60vh]" />
-        <Link
-          to="/"
-          className="text-lg font-semibold hover:underline flex items-center gap-2"
-        >
-          <ArrowLeft size={24} />
-          <span>Voltar a página principal</span>
-        </Link>
-      </main>
-    );
+    return <NotFound />;
   }
 
   return (
@@ -84,7 +74,7 @@ export default function Event() {
           </header>
           {/* Content */}
           <main>
-            <section className="grid grid-cols-2 gap-2">
+            <section className="grid grid-cols-1 md:grid-cols-2 gap-2">
               <aside className="flex flex-col gap-2">
                 <LabelValue
                   label="Status"
@@ -143,6 +133,7 @@ export default function Event() {
                 })}
               />
             </MapContainer>
+            {location && location.display_name}
           </main>
         </article>
       )}

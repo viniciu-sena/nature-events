@@ -10,13 +10,17 @@ export const formatterData = (response: { data: EventsResponse }): Event[] => {
           geo.coordinates.every((coord) => typeof coord === 'number'),
       ),
     )
-    .map((event) => ({
-      ...event,
-      geometry: event.geometry.map((geo) => ({
-        ...geo,
-        coordinates: [...geo.coordinates],
-      })),
-    }));
+    .map((event) => formatterSingleData(event));
+};
+
+export const formatterSingleData = (response: Event): Event => {
+  return {
+    ...response,
+    geometry: response.geometry.map((geo) => ({
+      ...geo,
+      coordinates: [...geo.coordinates],
+    })),
+  };
 };
 
 export const formatterDate = (date?: string): Date | undefined => {

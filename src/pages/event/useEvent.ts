@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { client } from '../../service/client';
+import { formatterSingleData } from '../../utils/formatters';
 
 export function useEvent() {
   const { id } = useParams();
@@ -17,7 +18,7 @@ export function useEvent() {
   } = useQuery({
     queryKey: [id],
     queryFn: () => client.eonet.event(id as string),
-    select: (response) => response.data,
+    select: (response) => formatterSingleData(response.data),
     staleTime: 300000,
     retry: false,
   });
@@ -30,5 +31,19 @@ export function useEvent() {
     return [0, 0];
   }, [event]);
 
-  return { event, isLoading, shareMessage, center, isError };
+  const { data: location } = useQuery({
+    queryKey: [`location-${center}`, center],
+    queryFn: () => client.location.reverse({ lat: center[0], lon: center[1] }),
+    select: (response) => response.data,
+    staleTime: 300000,
+  });
+
+  return {
+    event,
+    isLoading,
+    shareMessage,
+    center,
+    isError,
+    location,
+  };
 }
